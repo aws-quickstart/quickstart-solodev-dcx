@@ -157,6 +157,11 @@ Parameters:
         - 'false'
         ConstraintDescription: must be either true or false.
 
+    GPG_PW:
+        Description: Encryption key for backups
+        Type: String
+        Default: "iYJQC1nt/CL7W+vi+t12WmqXpcI="
+
 Resources:
 
     ALB:
@@ -230,11 +235,13 @@ Resources:
                 DatabaseUsername: 'root'
                 DatabasePassword: !Ref DatabasePassword
                 FQDN: !Ref FQDN
+                GPG_PW: !Ref GPG_PW
                 CertificateArn: !Ref CertificateArn
                 SolodevContainer: '117940112483.dkr.ecr.us-east-1.amazonaws.com/cb5d26e2-0bcb-4e18-9526-570f3b241da1/cg-4250307103/solodev-cms:9.0-latest'
                 ApacheContainer: '117940112483.dkr.ecr.us-east-1.amazonaws.com/cb5d26e2-0bcb-4e18-9526-570f3b241da1/cg-4250307103/solodev-apache:9.0-latest'
-                MongoContainer: 'techcto/mongo:latest'
-                UseMarketplace: 'true'
+                MongoContainer: '117940112483.dkr.ecr.us-east-1.amazonaws.com/cb5d26e2-0bcb-4e18-9526-570f3b241da1/cg-4250307103/techcto/mongo:9.0-latest'
+                RedisContainer: '117940112483.dkr.ecr.us-east-1.amazonaws.com/cb5d26e2-0bcb-4e18-9526-570f3b241da1/cg-4250307103/redis:9.0-latest'
+                DuplicityContainer: '117940112483.dkr.ecr.us-east-1.amazonaws.com/cb5d26e2-0bcb-4e18-9526-570f3b241da1/cg-4250307103/techcto/duplicity:9.0-latest'
                 RestoreBucketName: !Ref RestoreBucketName
                 DesiredCount: !Ref InstanceCount
                 ServiceRole: !GetAtt ALB.Outputs.ServiceRole 
