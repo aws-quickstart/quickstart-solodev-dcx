@@ -12,8 +12,7 @@ Metadata:
         Label: 
           default: "Network Setup"
         Parameters: 
-          - VPCID
-          - Subnets
+          - AvailabilityZone
           - InstanceType
           - InstanceCount
           - KeyName
@@ -62,17 +61,9 @@ Mappings:
 
 Parameters:
 
-    VPCID: 
-        Type: AWS::EC2::VPC::Id
-        Description: Choose which VPC the Application should be deployed to
-        AllowedPattern: .+
-        ConstraintDescription: Please choose VPC
-
-    Subnets:
-        Description: Choose at least two public subnets for this application
-        Type: List<AWS::EC2::Subnet::Id>
-        AllowedPattern: .+
-        ConstraintDescription: Please choose Subnets
+    AvailabilityZone:
+        Description: Choose which subnets this ECS cluster should be deployed to
+        Type: List<AWS::EC2::AvailabilityZone::Name>
 
     KeyName:
         Description: Name of an existing EC2 KeyPair to enable SSH access to the instances
@@ -160,9 +151,17 @@ Parameters:
     GPG_PW:
         Description: Encryption key for backups
         Type: String
-        Default: "iYJQC1nt/CL7W+vi+t12WmqXpcI="
+        Default: "KbM7c1NVNZaN"
 
 Resources:
+
+    VPC:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: https://s3.amazonaws.com/solodev-aws-ha/aws/infrastructure/vpc.yaml
+            Parameters:
+                EnvironmentName:    !Ref AWS::StackName
+                AvailabilityZone:   !Join [ ",", !Ref AvailabilityZone]
 
     ALB:
         Type: AWS::CloudFormation::Stack
@@ -170,9 +169,9 @@ Resources:
             TemplateURL: https://s3.amazonaws.com/solodev-aws-ha/aws/infrastructure/alb.yaml
             Parameters:
                 EnvironmentName: !Ref AWS::StackName
-                VPC: !Ref VPCID
+                VPC: !GetAtt VPC.Outputs.VPC
                 CertificateArn: !Ref CertificateArn
-                Subnets: !Join [",", [!Select [0, !Ref Subnets], !Select [1, !Ref Subnets]]]
+                Subnets: !GetAtt VPC.Outputs.PublicSubnets
 
     EFS:
         Type: AWS::CloudFormation::Stack
@@ -180,10 +179,10 @@ Resources:
             TemplateURL: https://s3.amazonaws.com/solodev-aws-ha/aws/infrastructure/efs.yaml
             Parameters:
                 EnvironmentName: !Ref AWS::StackName
-                VPC: !Ref VPCID
+                VPC: !GetAtt VPC.Outputs.VPC
                 LoadBalancerSecurityGroup: !GetAtt ALB.Outputs.LoadBalancerSecurityGroup
                 StorageEncrypted: !Ref StorageEncrypted
-                Subnets: !Join [",", [!Select [0, !Ref Subnets], !Select [1, !Ref Subnets]]]
+                Subnets: !GetAtt VPC.Outputs.PublicSubnets
 
     ECS:
         Type: AWS::CloudFormation::Stack
@@ -194,10 +193,10 @@ Resources:
                 InstanceType: !Ref InstanceType
                 AMI: !FindInMap ["ECS", !Ref "AWS::Region", AMI]
                 ClusterSize: !Ref InstanceCount
-                VPC: !Ref VPCID
+                VPC: !GetAtt VPC.Outputs.VPC
                 EFS: !GetAtt EFS.Outputs.EFS
                 LoadBalancerSecurityGroup: !GetAtt ALB.Outputs.LoadBalancerSecurityGroup
-                Subnets: !Join [",", [!Select [0, !Ref Subnets], !Select [1, !Ref Subnets]]]
+                Subnets: !GetAtt VPC.Outputs.PublicSubnets
                 KeyName: !Ref KeyName
 
     RDS:
@@ -207,9 +206,9 @@ Resources:
             Parameters:
                 EnvironmentName: !Ref AWS::StackName
                 DatabaseName: !Ref DatabaseName
-                VPC: !Ref VPCID
+                VPC: !GetAtt VPC.Outputs.VPC
                 LoadBalancerSecurityGroup: !GetAtt ECS.Outputs.ECSHostSecurityGroup
-                Subnets: !Join [",", [!Select [0, !Ref Subnets], !Select [1, !Ref Subnets]]]
+                Subnets: !GetAtt VPC.Outputs.PublicSubnets
                 DatabasePassword: !Ref DatabasePassword
                 DeletionPolicy: !Ref DeletionPolicy
                 StorageEncrypted: !Ref StorageEncrypted
@@ -222,12 +221,12 @@ Resources:
             TemplateURL: https://s3.amazonaws.com/solodev-aws-ha/aws/services/ecs-solodev.yaml
             Parameters:
                 EnvironmentName: !Ref AWS::StackName
-                VPC: !Ref VPCID
+                VPC: !GetAtt VPC.Outputs.VPC
                 Cluster: !GetAtt ECS.Outputs.Cluster
                 ClusterArn: !GetAtt ECS.Outputs.ClusterArn
                 LoadBalancer: !GetAtt ALB.Outputs.LoadBalancer
                 LoadBalancerSecurityGroup: !GetAtt ALB.Outputs.LoadBalancerSecurityGroup
-                Subnets: !Join [",", [!Select [0, !Ref Subnets], !Select [1, !Ref Subnets]]]
+                Subnets: !GetAtt VPC.Outputs.PublicSubnets
                 AdminUsername: !Ref AdminUser
                 AdminPassword: !Ref AdminPassword
                 DatabaseHost: !GetAtt RDS.Outputs.DatabaseHost

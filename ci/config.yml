@@ -1,6 +1,6 @@
 global:
-  marketplace-ami: false
-  owner: quickstart-eng@amazon.com
+  marketplace-ami: true
+  owner: test@solodev.com
   qsname: quickstart-solodev-cms
   regions:
     - ap-northeast-1
@@ -20,8 +20,5 @@ global:
  
 tests:
   quickstart-solodev-cmst1:
-    parameter_input: quickstart-solodev-cms-example-params1.json
-    template_file: quickstart-solodev-cms-example1.template
-  quickstart-solodev-cmst2:
-    parameter_input: quickstart-solodev-cms-example-params2.json
-    template_file: quickstart-solodev-cms-example2.template
+    parameter_input: solodev-enterprise-ecs.json
+    template_file: solodev-enterprise-ecs.yaml

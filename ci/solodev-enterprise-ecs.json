@@ -1,0 +1,34 @@
+[
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": "$[taskcat_getkeypair]"
+  }, 
+  {
+    "ParameterKey": "InstanceCount",
+    "ParameterValue": "1"
+  },
+  {
+    "ParameterKey": "DatabasePassword",
+    "ParameterValue": "$[taskcat_genpass_32]"
+  }, 
+  {
+    "ParameterKey": "AdminPassword",
+    "ParameterValue": "$[taskcat_genpass_32]"
+  }, 
+  {
+    "ParameterKey": "GPG_PW",
+    "ParameterValue": "$[taskcat_genpass_32]"
+  }, 
+  {
+    "ParameterKey": "FQDN",
+    "ParameterValue": ""
+  }, 
+  {
+    "ParameterKey": "CertificateArn",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "DeletionPolicy",
+    "ParameterValue": "Delete"
+  }
+]
