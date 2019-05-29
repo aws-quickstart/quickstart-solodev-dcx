@@ -158,7 +158,7 @@ Resources:
     VPC:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: https://s3.amazonaws.com/solodev-aws-ha/aws/infrastructure/vpc.yaml
+            TemplateURL: templates/vpc.yaml
             Parameters:
                 EnvironmentName:    !Ref AWS::StackName
                 AvailabilityZone:   !Join [ ",", !Ref AvailabilityZone]
@@ -166,7 +166,7 @@ Resources:
     ALB:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: https://s3.amazonaws.com/solodev-aws-ha/aws/infrastructure/alb.yaml
+            TemplateURL: templates/alb.yaml
             Parameters:
                 EnvironmentName: !Ref AWS::StackName
                 VPC: !GetAtt VPC.Outputs.VPC
@@ -176,7 +176,7 @@ Resources:
     EFS:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: https://s3.amazonaws.com/solodev-aws-ha/aws/infrastructure/efs.yaml
+            TemplateURL: templates/efs.yaml
             Parameters:
                 EnvironmentName: !Ref AWS::StackName
                 VPC: !GetAtt VPC.Outputs.VPC
@@ -187,7 +187,7 @@ Resources:
     ECS:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: https://s3.amazonaws.com/solodev-aws-ha/aws/infrastructure/ecs.yaml
+            TemplateURL: templates/ecs.yaml
             Parameters:
                 EnvironmentName: !Ref AWS::StackName
                 InstanceType: !Ref InstanceType
@@ -202,7 +202,7 @@ Resources:
     RDS:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: https://s3.amazonaws.com/solodev-aws-ha/aws/infrastructure/rds.yaml
+            TemplateURL: templates/rds.yaml
             Parameters:
                 EnvironmentName: !Ref AWS::StackName
                 DatabaseName: !Ref DatabaseName
@@ -218,7 +218,7 @@ Resources:
         Type: AWS::CloudFormation::Stack
         DependsOn: RDS
         Properties:
-            TemplateURL: https://s3.amazonaws.com/solodev-aws-ha/aws/services/ecs-solodev.yaml
+            TemplateURL: templates/ecs-solodev.yaml
             Parameters:
                 EnvironmentName: !Ref AWS::StackName
                 VPC: !GetAtt VPC.Outputs.VPC
