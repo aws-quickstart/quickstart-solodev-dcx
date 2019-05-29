@@ -148,7 +148,7 @@ Parameters:
         - 'false'
         ConstraintDescription: must be either true or false.
 
-    GPG_PW:
+    GPGPW:
         Description: Encryption key for backups
         Type: String
         Default: "KbM7c1NVNZaN"
@@ -234,7 +234,7 @@ Resources:
                 DatabaseUsername: 'root'
                 DatabasePassword: !Ref DatabasePassword
                 FQDN: !Ref FQDN
-                GPG_PW: !Ref GPG_PW
+                GPGPW: !Ref GPGPW
                 CertificateArn: !Ref CertificateArn
                 SolodevContainer: '117940112483.dkr.ecr.us-east-1.amazonaws.com/cb5d26e2-0bcb-4e18-9526-570f3b241da1/cg-4250307103/solodev-cms:9.0-latest'
                 ApacheContainer: '117940112483.dkr.ecr.us-east-1.amazonaws.com/cb5d26e2-0bcb-4e18-9526-570f3b241da1/cg-4250307103/solodev-apache:9.0-latest'

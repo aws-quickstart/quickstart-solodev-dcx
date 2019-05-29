@@ -4,6 +4,10 @@
     "ParameterValue": "$[taskcat_getkeypair]"
   }, 
   {
+    "ParameterKey": "AvailabilityZone",
+    "ParameterValue": "$[taskcat_genaz_<n>]"
+  },
+  {
     "ParameterKey": "InstanceCount",
     "ParameterValue": "1"
   },
@@ -16,7 +20,7 @@
     "ParameterValue": "$[taskcat_genpass_32]"
   }, 
   {
-    "ParameterKey": "GPG_PW",
+    "ParameterKey": "GPGPW",
     "ParameterValue": "$[taskcat_genpass_32]"
   }, 
   {

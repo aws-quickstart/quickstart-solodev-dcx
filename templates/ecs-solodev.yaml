@@ -134,7 +134,7 @@ Parameters:
         Type: String
         Description: 'Asset Deletion Policy'
 
-    GPG_PW:
+    GPGPW:
         Type: String
 
     UseMarketplace:
@@ -306,8 +306,8 @@ Resources:
                           Value: !GetAtt 
                             - BackupUserKeys
                             - SecretAccessKey
-                        - Name: GPG_PW
-                          Value: !Ref GPG_PW
+                        - Name: GPGPW
+                          Value: !Ref GPGPW
                     LogConfiguration:
                         LogDriver: awslogs
                         Options:
@@ -359,8 +359,8 @@ Resources:
                           Value: !GetAtt 
                             - BackupUserKeys
                             - SecretAccessKey
-                        - Name: GPG_PW
-                          Value: !Ref GPG_PW
+                        - Name: GPGPW
+                          Value: !Ref GPGPW
                     LogConfiguration:
                         LogDriver: awslogs
                         Options:
