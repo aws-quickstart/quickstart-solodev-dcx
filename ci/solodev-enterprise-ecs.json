@@ -5,7 +5,7 @@
   }, 
   {
     "ParameterKey": "AvailabilityZone",
-    "ParameterValue": "$[taskcat_genaz_<n>]"
+    "ParameterValue": "$[taskcat_genaz_1],$[taskcat_genaz_2]"
   },
   {
     "ParameterKey": "InstanceCount",
