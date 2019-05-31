@@ -1,12 +1,12 @@
 global:
   marketplace-ami: true
   owner: test@solodev.com
-  qsname: quickstart-solodev-cms
+  qsname: quickstart-solodev-dcx
   regions:
     - us-east-1
   reporting: true
  
 tests:
-  quickstart-solodev-cmst1:
+  solodev-dcxt1:
     parameter_input: solodev-enterprise-ecs.json
     template_file: solodev-enterprise-ecs.yaml

@@ -37,6 +37,13 @@ Metadata:
         Parameters: 
           - RestoreBucketName
           - DeletionPolicy
+      - 
+        Label:
+          default: AWS Quick Start Configuration
+        Parameters:
+          - QSS3BucketName
+          - QSS3KeyPrefix
+
 
 Mappings:
   ECS:
@@ -153,20 +160,34 @@ Parameters:
         Type: String
         Default: "KbM7c1NVNZaN"
 
+    QSS3BucketName:
+        AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
+        Description:  S3 bucket name for the Quick Start assets. Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).
+        Type: String
+        Default: "aws-quickstart"
+        ConstraintDescription: Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).
+
+    QSS3KeyPrefix:
+        AllowedPattern: "^[0-9a-zA-Z-/]*$"
+        Description:  Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).
+        Type: String
+        Default: "quickstart-solodev-dcx/"
+        ConstraintDescription: S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).
+
 Resources:
 
     VPC:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: templates/vpc.yaml
+            TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/vpc.yaml
             Parameters:
                 EnvironmentName:    !Ref AWS::StackName
-                AvailabilityZone:   !Join [ ",", !Ref AvailabilityZone]
+                AvailabilityZone:   !Join [ ",", !Ref AvailabilityZone]         
 
     ALB:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: templates/alb.yaml
+            TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/alb.yaml
             Parameters:
                 EnvironmentName: !Ref AWS::StackName
                 VPC: !GetAtt VPC.Outputs.VPC
@@ -176,7 +197,7 @@ Resources:
     EFS:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: templates/efs.yaml
+            TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/efs.yaml             
             Parameters:
                 EnvironmentName: !Ref AWS::StackName
                 VPC: !GetAtt VPC.Outputs.VPC
@@ -187,7 +208,7 @@ Resources:
     ECS:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: templates/ecs.yaml
+            TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/ecs.yaml          
             Parameters:
                 EnvironmentName: !Ref AWS::StackName
                 InstanceType: !Ref InstanceType
@@ -202,7 +223,7 @@ Resources:
     RDS:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: templates/rds.yaml
+            TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/rds.yaml
             Parameters:
                 EnvironmentName: !Ref AWS::StackName
                 DatabaseName: !Ref DatabaseName
@@ -218,7 +239,7 @@ Resources:
         Type: AWS::CloudFormation::Stack
         DependsOn: RDS
         Properties:
-            TemplateURL: templates/ecs-solodev.yaml
+            TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/ecs-solodev.yaml
             Parameters:
                 EnvironmentName: !Ref AWS::StackName
                 VPC: !GetAtt VPC.Outputs.VPC

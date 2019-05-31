@@ -1,11 +1,15 @@
 [
   {
+    "ParameterKey":"QSS3BucketName",
+    "ParameterValue":"$[taskcat_autobucket]"
+  },
+  {
     "ParameterKey": "KeyName",
-    "ParameterValue": "$[taskcat_getkeypair]"
+    "ParameterValue": "docker1"
   }, 
   {
     "ParameterKey": "AvailabilityZone",
-    "ParameterValue": "$[taskcat_genaz_1],$[taskcat_genaz_2]"
+    "ParameterValue": "us-east-1e, us-east-1c"
   },
   {
     "ParameterKey": "InstanceCount",
