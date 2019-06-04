@@ -151,7 +151,12 @@ Resources:
     SolodevBucket:
         Type: AWS::S3::Bucket
         Properties:
-            BucketName: !Join ['-', [!Ref 'EnvironmentName', 'solodev']]
+            BucketName: 
+              'Fn::Transform':
+                - Name: 'String'
+                  Parameters:
+                    InputString: !Join ['-', [!Ref 'EnvironmentName', 'solodev']]
+                    Operation: Lower
             AccessControl: 'BucketOwnerFullControl'
             Tags:
                 -
