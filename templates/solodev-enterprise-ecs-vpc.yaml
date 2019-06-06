@@ -12,8 +12,7 @@ Metadata:
         Label: 
           default: "Network Setup"
         Parameters: 
-          - VPCID
-          - Subnets
+          - AvailabilityZone
           - InstanceType
           - InstanceCount
           - KeyName
@@ -69,17 +68,9 @@ Mappings:
 
 Parameters:
 
-    VPCID: 
-        Type: AWS::EC2::VPC::Id
-        Description: Choose which VPC the Application should be deployed to
-        AllowedPattern: .+
-        ConstraintDescription: Please choose VPC
-
-    Subnets:
-        Description: Choose at least two public subnets for this application
-        Type: List<AWS::EC2::Subnet::Id>
-        AllowedPattern: .+
-        ConstraintDescription: Please choose Subnets
+    AvailabilityZone:
+        Description: Choose which subnets this ECS cluster should be deployed to
+        Type: List<AWS::EC2::AvailabilityZone::Name>
 
     KeyName:
         Description: Name of an existing EC2 KeyPair to enable SSH access to the instances
@@ -183,7 +174,15 @@ Parameters:
         Default: "quickstart-solodev-dcx/"
         ConstraintDescription: S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).
 
-Resources:     
+Resources:
+
+    VPC:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/vpc.yaml
+            Parameters:
+                EnvironmentName:    !Ref AWS::StackName
+                AvailabilityZone:   !Join [ ",", !Ref AvailabilityZone]         
 
     ALB:
         Type: AWS::CloudFormation::Stack
