@@ -8,13 +8,9 @@
     "ParameterValue": "mykey"
   }, 
   {
-    "ParameterKey": "VPCID",
-    "ParameterValue": "myvpc"
-  }, 
-  {
-    "ParameterKey": "Subnets",
-    "ParameterValue": "mysubnets"
-  }, 
+    "ParameterKey": "AvailabilityZone",
+    "ParameterValue": "$[taskcat_genaz_2]"
+  },
   {
     "ParameterKey": "InstanceCount",
     "ParameterValue": "1"
