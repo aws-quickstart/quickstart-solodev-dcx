@@ -90,7 +90,7 @@ Parameters:
 
     InstanceCount:
         Description: 'Number of instances behind load balancer.  Minimum 2 required for high availability.'
-        Default: 1
+        Default: 2
         AllowedValues: [1, 2, 3, 4, 5]
         Type: Number
 
@@ -101,11 +101,11 @@ Parameters:
 
     FQDN:
         Type: String
-        Description: URL for app. FQDN must be pointed to CNAME of ALB.
+        Description: (Optional) URL for app. FQDN must be pointed to CNAME of ALB.
 
     CertificateArn:
         Type: String
-        Description: CertificateArn for SSL cert that matches the FQDN above. Please visit the AWS Certificate Manager.
+        Description: (Optional) CertificateArn for SSL cert that matches the FQDN above. Please visit the AWS Certificate Manager.
 
     AdminUser:
         Description: The solodev admin username
@@ -142,7 +142,7 @@ Parameters:
         ConstraintDescription: Please set database root password
 
     RestoreBucketName:
-        Description: Name of S3 bucket containing files for restore
+        Description: (Optional) Name of S3 bucket containing files for restore
         Type: String
         Default: ""
 
@@ -179,10 +179,9 @@ Resources:
     VPC:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/vpc.yaml
+            TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}submodules/quickstart-aws-vpc/templates/aws-vpc.template
             Parameters:
-                EnvironmentName:    !Ref AWS::StackName
-                AvailabilityZone:   !Join [ ",", !Ref AvailabilityZone]         
+                AvailabilityZones:   !Join [ ",", !Ref AvailabilityZone]         
 
     ALB:
         Type: AWS::CloudFormation::Stack
@@ -190,9 +189,9 @@ Resources:
             TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/alb.yaml
             Parameters:
                 EnvironmentName: !Ref AWS::StackName
-                VPC: !GetAtt VPC.Outputs.VPC
+                VPC: !GetAtt VPC.Outputs.VPCID
                 CertificateArn: !Ref CertificateArn
-                Subnets: !GetAtt VPC.Outputs.PublicSubnets
+                Subnets: !Join [ ",", [ !GetAtt VPC.Outputs.PublicSubnet1ID, !GetAtt VPC.Outputs.PublicSubnet2ID ] ]
 
     EFS:
         Type: AWS::CloudFormation::Stack
@@ -200,10 +199,10 @@ Resources:
             TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/efs.yaml             
             Parameters:
                 EnvironmentName: !Ref AWS::StackName
-                VPC: !GetAtt VPC.Outputs.VPC
+                VPC: !GetAtt VPC.Outputs.VPCID
                 LoadBalancerSecurityGroup: !GetAtt ALB.Outputs.LoadBalancerSecurityGroup
                 StorageEncrypted: !Ref StorageEncrypted
-                Subnets: !GetAtt VPC.Outputs.PublicSubnets
+                Subnets: !Join [ ",", [ !GetAtt VPC.Outputs.PublicSubnet1ID, !GetAtt VPC.Outputs.PublicSubnet2ID ] ]
 
     ECS:
         Type: AWS::CloudFormation::Stack
@@ -214,10 +213,10 @@ Resources:
                 InstanceType: !Ref InstanceType
                 AMI: !FindInMap ["ECS", !Ref "AWS::Region", AMI]
                 ClusterSize: !Ref InstanceCount
-                VPC: !GetAtt VPC.Outputs.VPC
+                VPC: !GetAtt VPC.Outputs.VPCID
                 EFS: !GetAtt EFS.Outputs.EFS
                 LoadBalancerSecurityGroup: !GetAtt ALB.Outputs.LoadBalancerSecurityGroup
-                Subnets: !GetAtt VPC.Outputs.PublicSubnets
+                Subnets: !Join [ ",", [ !GetAtt VPC.Outputs.PublicSubnet1ID, !GetAtt VPC.Outputs.PublicSubnet2ID ] ]
                 KeyName: !Ref KeyName
 
     RDS:
@@ -227,9 +226,9 @@ Resources:
             Parameters:
                 EnvironmentName: !Ref AWS::StackName
                 DatabaseName: !Ref DatabaseName
-                VPC: !GetAtt VPC.Outputs.VPC
+                VPC: !GetAtt VPC.Outputs.VPCID
                 LoadBalancerSecurityGroup: !GetAtt ECS.Outputs.ECSHostSecurityGroup
-                Subnets: !GetAtt VPC.Outputs.PublicSubnets
+                Subnets: !Join [ ",", [ !GetAtt VPC.Outputs.PublicSubnet1ID, !GetAtt VPC.Outputs.PublicSubnet2ID ] ]
                 DatabasePassword: !Ref DatabasePassword
                 DeletionPolicy: !Ref DeletionPolicy
                 StorageEncrypted: !Ref StorageEncrypted
@@ -242,12 +241,12 @@ Resources:
             TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/ecs-solodev.yaml
             Parameters:
                 EnvironmentName: !Ref AWS::StackName
-                VPC: !GetAtt VPC.Outputs.VPC
+                VPC: !GetAtt VPC.Outputs.VPCID
                 Cluster: !GetAtt ECS.Outputs.Cluster
                 ClusterArn: !GetAtt ECS.Outputs.ClusterArn
                 LoadBalancer: !GetAtt ALB.Outputs.LoadBalancer
                 LoadBalancerSecurityGroup: !GetAtt ALB.Outputs.LoadBalancerSecurityGroup
-                Subnets: !GetAtt VPC.Outputs.PublicSubnets
+                Subnets: !Join [ ",", [ !GetAtt VPC.Outputs.PublicSubnet1ID, !GetAtt VPC.Outputs.PublicSubnet2ID ] ]
                 AdminUsername: !Ref AdminUser
                 AdminPassword: !Ref AdminPassword
                 DatabaseHost: !GetAtt RDS.Outputs.DatabaseHost

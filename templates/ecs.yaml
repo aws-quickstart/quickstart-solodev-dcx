@@ -115,17 +115,18 @@ Parameters:
         Default: efs
 
     DockerUsername:
-        Description: Docker username
+        Description: (Optional) Docker username
         Type: String
         Default: ''
 
     DockerPassword:
-        Description: Docker password
+        Description: (Optional) Docker password
         Type: String
         Default: ''
+        NoEcho: true
 
     DockerEmail:
-        Description: Docker email address
+        Description: (Optional) Docker email address
         Type: String
         Default: ''
 

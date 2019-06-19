@@ -111,12 +111,12 @@ Parameters:
 
     FQDN:
       Type: String
-      Description: URL for app. FQDN must be pointed to CNAME of the load balancer.
+      Description: (Optional) URL for app. FQDN must be pointed to CNAME of the load balancer.
       Default: ''
 
     CertificateArn:
       Type: String
-      Description: SSL cert for HTTPS listener that matches the FQDN
+      Description: (Optional) SSL cert for HTTPS listener that matches the FQDN
       Default: ''
 
     CronSchedule:

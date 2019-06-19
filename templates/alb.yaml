@@ -17,7 +17,7 @@ Parameters:
 
     CertificateArn:
       Type: String
-      Description: SSL cert for HTTPS listener that matches the FQDN
+      Description: (Optional) SSL cert for HTTPS listener that matches the FQDN
       Default: ''
 
 Conditions:
