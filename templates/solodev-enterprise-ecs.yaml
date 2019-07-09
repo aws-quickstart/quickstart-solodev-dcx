@@ -49,23 +49,23 @@ Metadata:
 Mappings:
   ECS:
     us-east-1:
-      AMI: "ami-02507631a9f7bc956"
+      AMI: "ami-045f1b3f87ed83659"
     us-east-2:
-      AMI: "ami-0329a1fdc914b0c55"
+      AMI: "ami-0307f7ccf6ea35750"
     us-west-1:
-      AMI: "ami-0e7f661f69bb5d6b4"
+      AMI: "ami-0285183bbef6224bd"
     us-west-2:
-      AMI: "ami-00e0090ac21971297"
+      AMI: "ami-01b70aea4161476b7"
     eu-west-1:
-      AMI: "ami-04a084a6d17d9816e"
+      AMI: "ami-0627e141ce928067c"
     sa-east-1:
-      AMI: "ami-01569d819ef2d5743"
+      AMI: "ami-084b1eee100c102ee"
     ap-southeast-1:
-      AMI: "ami-0e8baaccc62ee0a9f"
+      AMI: "ami-050865a806e0dae53"
     ap-southeast-2:
-      AMI: "ami-01711df8fe87a6217"
+      AMI: "ami-02c73ee1100ce3e7a"
     ap-northeast-1:
-      AMI: "ami-052f2fa11c7145e04"
+      AMI: "ami-05b296a384694dfa4"
 
 Parameters:
 
