@@ -107,7 +107,7 @@ Resources:
         - Key: Name
           Value: !Join 
             - '-'
-            - - !Ref 'AWS::StackName'
+            - - !Ref 'EnvironmentName'
               - DBSubnetGroup
 
   RDSSecurityGroup:
@@ -124,7 +124,7 @@ Resources:
         - Key: Name
           Value: !Join 
             - '-'
-            - - !Ref 'AWS::StackName'
+            - - !Ref 'EnvironmentName'
               - RDS-SecurityGroup
 
   RDS:
@@ -136,7 +136,7 @@ Resources:
       StorageEncrypted: true
       DBInstanceIdentifier: !Join 
         - '-'
-        - - !Ref 'AWS::StackName'
+        - - !Ref 'EnvironmentName'
           - RDS
       AllocatedStorage: !Ref DBAllocatedStorage
       BackupRetentionPeriod: '7'
@@ -156,7 +156,7 @@ Resources:
         - Key: Name
           Value: !Join 
             - '-'
-            - - !Ref 'AWS::StackName'
+            - - !Ref 'EnvironmentName'
               - RDS
 Outputs:
 

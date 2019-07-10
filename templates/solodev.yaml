@@ -3,7 +3,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 
 Description: >
 
-    Solodev DCX Enterprise for Docker ECS on AWS
+    This template deploys Solodev Enterprise for Docker into an existing VPC
 
 Metadata: 
   AWS::CloudFormation::Interface: 
@@ -11,7 +11,8 @@ Metadata:
       - 
         Label: 
           default: "Network Setup"
-        Parameters: 
+        Parameters:
+          - ResourceName 
           - VPCID
           - Subnets
           - InstanceType
@@ -68,6 +69,11 @@ Mappings:
       AMI: "ami-05b296a384694dfa4"
 
 Parameters:
+
+    ResourceName:
+        Type: String
+        Description: 'The name used to title the nested stacks'
+        Default: "solodev-quickstart"
 
     VPCID: 
         Type: AWS::EC2::VPC::Id
@@ -190,7 +196,7 @@ Resources:
         Properties:
             TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/alb.yaml
             Parameters:
-                EnvironmentName: !Ref AWS::StackName
+                EnvironmentName: !Ref ResourceName
                 VPC: !Ref VPCID
                 CertificateArn: !Ref CertificateArn
                 Subnets: !Join [",", [!Select [0, !Ref Subnets], !Select [1, !Ref Subnets]]]
@@ -200,7 +206,7 @@ Resources:
         Properties:
             TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/efs.yaml             
             Parameters:
-                EnvironmentName: !Ref AWS::StackName
+                EnvironmentName: !Ref ResourceName
                 VPC: !Ref VPCID
                 LoadBalancerSecurityGroup: !GetAtt ALB.Outputs.LoadBalancerSecurityGroup
                 StorageEncrypted: !Ref StorageEncrypted
@@ -211,7 +217,7 @@ Resources:
         Properties:
             TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/ecs.yaml          
             Parameters:
-                EnvironmentName: !Ref AWS::StackName
+                EnvironmentName: !Ref ResourceName
                 InstanceType: !Ref InstanceType
                 AMI: !FindInMap ["ECS", !Ref "AWS::Region", AMI]
                 ClusterSize: !Ref InstanceCount
@@ -226,7 +232,7 @@ Resources:
         Properties:
             TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/rds.yaml
             Parameters:
-                EnvironmentName: !Ref AWS::StackName
+                EnvironmentName: !Ref ResourceName
                 DatabaseName: !Ref DatabaseName
                 VPC: !Ref VPCID
                 LoadBalancerSecurityGroup: !GetAtt ECS.Outputs.ECSHostSecurityGroup
@@ -242,7 +248,7 @@ Resources:
         Properties:
             TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/ecs-solodev.yaml
             Parameters:
-                EnvironmentName: !Ref AWS::StackName
+                EnvironmentName: !Ref ResourceName
                 VPC: !Ref VPCID
                 Cluster: !GetAtt ECS.Outputs.Cluster
                 ClusterArn: !GetAtt ECS.Outputs.ClusterArn

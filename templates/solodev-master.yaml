@@ -3,7 +3,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 
 Description: >
 
-    Solodev CMS Enterprise for Docker ECS on AWS
+    This template deploys Solodev Enterprise for Docker into a new VPC
 
 Metadata: 
   AWS::CloudFormation::Interface: 
@@ -12,6 +12,7 @@ Metadata:
         Label: 
           default: "Network Setup"
         Parameters: 
+          - ResourceName 
           - AvailabilityZone
           - InstanceType
           - InstanceCount
@@ -67,6 +68,11 @@ Mappings:
       AMI: "ami-05b296a384694dfa4"
 
 Parameters:
+
+    ResourceName:
+        Type: String
+        Description: 'The name used to title the nested stacks'
+        Default: "solodev-quickstart"
 
     AvailabilityZone:
         Description: Choose which subnets this ECS cluster should be deployed to
@@ -183,98 +189,27 @@ Resources:
             Parameters:
                 AvailabilityZones:   !Join [ ",", !Ref AvailabilityZone]         
 
-    ALB:
+    SolodevStack:
+        DependsOn: VPC
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/alb.yaml
+            TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/solodev.yaml
             Parameters:
-                EnvironmentName: !Ref AWS::StackName
-                VPC: !GetAtt VPC.Outputs.VPCID
+                ResourceName: !Ref ResourceName
+                VPCID: !GetAtt VPC.Outputs.VPCID
                 CertificateArn: !Ref CertificateArn
                 Subnets: !Join [ ",", [ !GetAtt VPC.Outputs.PublicSubnet1ID, !GetAtt VPC.Outputs.PublicSubnet2ID ] ]
-
-    EFS:
-        Type: AWS::CloudFormation::Stack
-        Properties:
-            TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/efs.yaml             
-            Parameters:
-                EnvironmentName: !Ref AWS::StackName
-                VPC: !GetAtt VPC.Outputs.VPCID
-                LoadBalancerSecurityGroup: !GetAtt ALB.Outputs.LoadBalancerSecurityGroup
                 StorageEncrypted: !Ref StorageEncrypted
-                Subnets: !Join [ ",", [ !GetAtt VPC.Outputs.PublicSubnet1ID, !GetAtt VPC.Outputs.PublicSubnet2ID ] ]
-
-    ECS:
-        Type: AWS::CloudFormation::Stack
-        Properties:
-            TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/ecs.yaml          
-            Parameters:
-                EnvironmentName: !Ref AWS::StackName
                 InstanceType: !Ref InstanceType
-                AMI: !FindInMap ["ECS", !Ref "AWS::Region", AMI]
-                ClusterSize: !Ref InstanceCount
-                VPC: !GetAtt VPC.Outputs.VPCID
-                EFS: !GetAtt EFS.Outputs.EFS
-                LoadBalancerSecurityGroup: !GetAtt ALB.Outputs.LoadBalancerSecurityGroup
-                Subnets: !Join [ ",", [ !GetAtt VPC.Outputs.PublicSubnet1ID, !GetAtt VPC.Outputs.PublicSubnet2ID ] ]
                 KeyName: !Ref KeyName
-
-    RDS:
-        Type: AWS::CloudFormation::Stack
-        Properties:
-            TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/rds.yaml
-            Parameters:
-                EnvironmentName: !Ref AWS::StackName
-                DatabaseName: !Ref DatabaseName
-                VPC: !GetAtt VPC.Outputs.VPCID
-                LoadBalancerSecurityGroup: !GetAtt ECS.Outputs.ECSHostSecurityGroup
-                Subnets: !Join [ ",", [ !GetAtt VPC.Outputs.PublicSubnet1ID, !GetAtt VPC.Outputs.PublicSubnet2ID ] ]
-                DatabasePassword: !Ref DatabasePassword
                 DeletionPolicy: !Ref DeletionPolicy
-                StorageEncrypted: !Ref StorageEncrypted
-                MultiAZDatabase: 'true'
-
-    SOLODEV:
-        Type: AWS::CloudFormation::Stack
-        DependsOn: RDS
-        Properties:
-            TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/ecs-solodev.yaml
-            Parameters:
-                EnvironmentName: !Ref AWS::StackName
-                VPC: !GetAtt VPC.Outputs.VPCID
-                Cluster: !GetAtt ECS.Outputs.Cluster
-                ClusterArn: !GetAtt ECS.Outputs.ClusterArn
-                LoadBalancer: !GetAtt ALB.Outputs.LoadBalancer
-                LoadBalancerSecurityGroup: !GetAtt ALB.Outputs.LoadBalancerSecurityGroup
-                Subnets: !Join [ ",", [ !GetAtt VPC.Outputs.PublicSubnet1ID, !GetAtt VPC.Outputs.PublicSubnet2ID ] ]
-                AdminUsername: !Ref AdminUser
+                AdminUser: !Ref AdminUser
                 AdminPassword: !Ref AdminPassword
-                DatabaseHost: !GetAtt RDS.Outputs.DatabaseHost
                 DatabaseName: !Ref DatabaseName
-                DatabaseUsername: 'root'
                 DatabasePassword: !Ref DatabasePassword
                 FQDN: !Ref FQDN
                 GPGPW: !Ref GPGPW
-                CertificateArn: !Ref CertificateArn
-                SolodevContainer: '117940112483.dkr.ecr.us-east-1.amazonaws.com/cb5d26e2-0bcb-4e18-9526-570f3b241da1/cg-4250307103/solodev-cms:9.0-latest'
-                ApacheContainer: '117940112483.dkr.ecr.us-east-1.amazonaws.com/cb5d26e2-0bcb-4e18-9526-570f3b241da1/cg-4250307103/solodev-apache:9.0-latest'
-                MongoContainer: '117940112483.dkr.ecr.us-east-1.amazonaws.com/cb5d26e2-0bcb-4e18-9526-570f3b241da1/cg-4250307103/techcto/mongo:9.0-latest'
-                RedisContainer: '117940112483.dkr.ecr.us-east-1.amazonaws.com/cb5d26e2-0bcb-4e18-9526-570f3b241da1/cg-4250307103/redis:9.0-latest'
-                DuplicityContainer: '117940112483.dkr.ecr.us-east-1.amazonaws.com/cb5d26e2-0bcb-4e18-9526-570f3b241da1/cg-4250307103/techcto/duplicity:9.0-latest'
                 RestoreBucketName: !Ref RestoreBucketName
-                DesiredCount: !Ref InstanceCount
-                ServiceRole: !GetAtt ALB.Outputs.ServiceRole 
-                Path: / 
-                DeletionPolicy: !Ref DeletionPolicy
-
-Outputs:
-
-    AdminUrl: 
-        Description: The URL endpoint for the load balancer. Point your DNS to this CNAME.
-        Value: !GetAtt ALB.Outputs.LoadBalancerUrl
-    AdminUsername: 
-        Description: Solodev admin username.
-        Value: !Ref AdminUser
-    AdminPassword: 
-        Description: Solodev admin password.
-        Value: !Ref AdminPassword
+                InstanceCount: !Ref InstanceCount
+                QSS3BucketName: !Ref QSS3BucketName
+                QSS3KeyPrefix: !Ref QSS3KeyPrefix            

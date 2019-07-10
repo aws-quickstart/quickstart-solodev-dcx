@@ -16,8 +16,8 @@ global:
  
 tests:
   dcxt1:
-    parameter_input: solodev-enterprise-ecs-vpc.json
-    template_file: solodev-enterprise-ecs-vpc.yaml  
+    parameter_input: solodev-master-vpc.json
+    template_file: solodev-master.yaml  
   dcxt2:
-    parameter_input: solodev-enterprise-ecs.json
-    template_file: solodev-enterprise-ecs.yaml
+    parameter_input: solodev-master.json
+    template_file: solodev.yaml

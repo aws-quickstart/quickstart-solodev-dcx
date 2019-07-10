@@ -38,7 +38,7 @@ Resources:
         - Key: Name
           Value: !Join 
             - '-'
-            - - !Ref 'AWS::StackName'
+            - - !Ref 'EnvironmentName'
               - EFS
 
   MountTargetSecurityGroup:
