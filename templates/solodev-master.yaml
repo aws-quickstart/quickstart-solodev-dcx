@@ -1,0 +1,215 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: >
+
+    This template deploys Solodev Enterprise for Docker into a new VPC
+
+Metadata: 
+  AWS::CloudFormation::Interface: 
+    ParameterGroups: 
+      - 
+        Label: 
+          default: "Network Setup"
+        Parameters: 
+          - ResourceName 
+          - AvailabilityZone
+          - InstanceType
+          - InstanceCount
+          - KeyName
+      - 
+        Label: 
+          default: "CMS Settings"
+        Parameters: 
+            - AdminUser
+            - AdminPassword
+            - DatabaseName
+            - DatabasePassword
+            - StorageEncrypted
+      - 
+        Label: 
+          default: "Optional: SSL Configuration"
+        Parameters: 
+          - FQDN
+          - CertificateArn
+      - 
+        Label: 
+          default: "Optional: Advanced"
+        Parameters: 
+          - RestoreBucketName
+          - DeletionPolicy
+      - 
+        Label:
+          default: AWS Quick Start Configuration
+        Parameters:
+          - QSS3BucketName
+          - QSS3KeyPrefix
+
+
+Mappings:
+  ECS:
+    us-east-1:
+      AMI: "ami-045f1b3f87ed83659"
+    us-east-2:
+      AMI: "ami-0307f7ccf6ea35750"
+    us-west-1:
+      AMI: "ami-0285183bbef6224bd"
+    us-west-2:
+      AMI: "ami-01b70aea4161476b7"
+    eu-west-1:
+      AMI: "ami-0627e141ce928067c"
+    sa-east-1:
+      AMI: "ami-084b1eee100c102ee"
+    ap-southeast-1:
+      AMI: "ami-050865a806e0dae53"
+    ap-southeast-2:
+      AMI: "ami-02c73ee1100ce3e7a"
+    ap-northeast-1:
+      AMI: "ami-05b296a384694dfa4"
+
+Parameters:
+
+    ResourceName:
+        Type: String
+        Description: 'The name used to title the nested stacks'
+        Default: "solodev-quickstart"
+
+    AvailabilityZone:
+        Description: Choose which subnets this ECS cluster should be deployed to
+        Type: List<AWS::EC2::AvailabilityZone::Name>
+
+    KeyName:
+        Description: Name of an existing EC2 KeyPair to enable SSH access to the instances
+        Type: 'AWS::EC2::KeyPair::KeyName'
+        AllowedPattern: .+
+        ConstraintDescription: Please choose EC2 KeyPair
+
+    InstanceType:
+        Type: String
+        Default: m3.medium
+        AllowedValues: [t2.micro, t2.small, t2.medium, t2.large, m3.medium, m3.large,
+        m3.xlarge, m3.2xlarge, m4.large, m4.xlarge, m4.2xlarge, m4.4xlarge, m4.10xlarge,
+        c4.large, c4.xlarge, c4.2xlarge, c4.4xlarge, c4.8xlarge, c3.large, c3.xlarge,
+        c3.2xlarge, c3.4xlarge, c3.8xlarge, r3.large, r3.xlarge, r3.2xlarge, r3.4xlarge,
+        r3.8xlarge, i2.xlarge, i2.2xlarge, i2.4xlarge, i2.8xlarge]
+        ConstraintDescription: Please choose a valid instance type.
+
+    InstanceCount:
+        Description: 'Number of instances behind load balancer.  Minimum 2 required for high availability.'
+        Default: 2
+        AllowedValues: [1, 2, 3, 4, 5]
+        Type: Number
+
+    DeletionPolicy:
+        Default: 'Delete'
+        Type: String
+        Description: 'Experimental: Deletion Policy (Retain, Delete, Snapshot)'
+
+    FQDN:
+        Type: String
+        Description: (Optional) URL for app. FQDN must be pointed to CNAME of ALB.
+
+    CertificateArn:
+        Type: String
+        Description: (Optional) CertificateArn for SSL cert that matches the FQDN above. Please visit the AWS Certificate Manager.
+
+    AdminUser:
+        Description: The solodev admin username
+        Type: String
+        Default: 'solodev'
+        AllowedPattern: .+
+        ConstraintDescription: Please set admin username
+
+    AdminPassword:
+        NoEcho: true
+        Description: The solodev admin password
+        Type: String
+        MinLength: 1
+        MaxLength: 41
+        AllowedPattern: .+
+        ConstraintDescription: Please set admin password
+
+    DatabaseName:
+        Description: The solodev database name
+        Type: String
+        MinLength: '1'
+        MaxLength: '64'
+        AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+        ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
+        Default: 'solodev'
+
+    DatabasePassword:
+        NoEcho: true
+        Description: The database root password
+        Type: String
+        MinLength: 1
+        MaxLength: 41
+        AllowedPattern: .+
+        ConstraintDescription: Please set database root password
+
+    RestoreBucketName:
+        Description: (Optional) Name of S3 bucket containing files for restore
+        Type: String
+        Default: ""
+
+    StorageEncrypted:
+        Default: 'true'
+        Description: Enable encryption for both Database (RDS) and Filesystem (EFS)
+        Type: String
+        AllowedValues:
+        - 'true'
+        - 'false'
+        ConstraintDescription: must be either true or false.
+
+    GPGPW:
+        Description: Encryption key for backups
+        Type: String
+        Default: "KbM7c1NVNZaN"
+
+    QSS3BucketName:
+        AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
+        Description:  S3 bucket name for the Quick Start assets. Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).
+        Type: String
+        Default: "aws-quickstart"
+        ConstraintDescription: Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).
+
+    QSS3KeyPrefix:
+        AllowedPattern: "^[0-9a-zA-Z-/]*$"
+        Description:  Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).
+        Type: String
+        Default: "quickstart-solodev-dcx/"
+        ConstraintDescription: S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).
+
+Resources:
+
+    VPC:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}submodules/quickstart-aws-vpc/templates/aws-vpc.template
+            Parameters:
+                AvailabilityZones:   !Join [ ",", !Ref AvailabilityZone]         
+
+    SolodevStack:
+        DependsOn: VPC
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/solodev.yaml
+            Parameters:
+                ResourceName: !Ref ResourceName
+                VPCID: !GetAtt VPC.Outputs.VPCID
+                CertificateArn: !Ref CertificateArn
+                Subnets: !Join [ ",", [ !GetAtt VPC.Outputs.PublicSubnet1ID, !GetAtt VPC.Outputs.PublicSubnet2ID ] ]
+                StorageEncrypted: !Ref StorageEncrypted
+                InstanceType: !Ref InstanceType
+                KeyName: !Ref KeyName
+                DeletionPolicy: !Ref DeletionPolicy
+                AdminUser: !Ref AdminUser
+                AdminPassword: !Ref AdminPassword
+                DatabaseName: !Ref DatabaseName
+                DatabasePassword: !Ref DatabasePassword
+                FQDN: !Ref FQDN
+                GPGPW: !Ref GPGPW
+                RestoreBucketName: !Ref RestoreBucketName
+                InstanceCount: !Ref InstanceCount
+                QSS3BucketName: !Ref QSS3BucketName
+                QSS3KeyPrefix: !Ref QSS3KeyPrefix            

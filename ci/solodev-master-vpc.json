@@ -1,0 +1,42 @@
+[
+  {
+    "ParameterKey":"QSS3BucketName",
+    "ParameterValue":"$[taskcat_autobucket]"
+  },
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": "mykey"
+  }, 
+  {
+    "ParameterKey": "AvailabilityZone",
+    "ParameterValue": "$[taskcat_genaz_2]"
+  },
+  {
+    "ParameterKey": "InstanceCount",
+    "ParameterValue": "1"
+  },
+  {
+    "ParameterKey": "DatabasePassword",
+    "ParameterValue": "$[taskcat_genpass_32]"
+  }, 
+  {
+    "ParameterKey": "AdminPassword",
+    "ParameterValue": "$[taskcat_genpass_32]"
+  }, 
+  {
+    "ParameterKey": "GPGPW",
+    "ParameterValue": "$[taskcat_genpass_32]"
+  }, 
+  {
+    "ParameterKey": "FQDN",
+    "ParameterValue": ""
+  }, 
+  {
+    "ParameterKey": "CertificateArn",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "DeletionPolicy",
+    "ParameterValue": "Delete"
+  }
+]
