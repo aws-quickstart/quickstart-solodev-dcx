@@ -10,7 +10,7 @@ Metadata:
     ParameterGroups: 
       - 
         Label: 
-          default: "Network Setup"
+          default: "Network Configuration"
         Parameters:
           - ResourceName 
           - VPCID
@@ -20,7 +20,7 @@ Metadata:
           - KeyName
       - 
         Label: 
-          default: "CMS Settings"
+          default: "CMS Configuration"
         Parameters: 
             - AdminUser
             - AdminPassword
@@ -35,7 +35,7 @@ Metadata:
           - CertificateArn
       - 
         Label: 
-          default: "Optional: Advanced"
+          default: "Optional: Advance Configuration"
         Parameters: 
           - RestoreBucketName
           - DeletionPolicy
