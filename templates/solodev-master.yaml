@@ -8,75 +8,75 @@ Description: >
 Metadata: 
   AWS::CloudFormation::Interface: 
     ParameterGroups: 
-      - 
-        Label: 
-          default: "Network Setup"
-        Parameters: 
-          - ResourceName 
-          - AvailabilityZone
-          - InstanceType
-          - InstanceCount
-          - KeyName
-      - 
-        Label: 
-          default: "CMS Settings"
-        Parameters: 
-            - AdminUser
-            - AdminPassword
-            - DatabaseName
-            - DatabasePassword
-            - StorageEncrypted
-      - 
-        Label: 
-          default: "Optional: SSL Configuration"
-        Parameters: 
-          - FQDN
-          - CertificateArn
-      - 
-        Label: 
-          default: "Optional: Advanced"
-        Parameters: 
-          - RestoreBucketName
-          - DeletionPolicy
-      - 
-        Label:
-          default: AWS Quick Start Configuration
-        Parameters:
-          - QSS3BucketName
-          - QSS3KeyPrefix
-      ParameterLabels:
-        ResourceName:
-          default: Resource name for the stack
-        AvailabilityZone:
-          default: Availability zone to deploy the stack
-        InstanceType:
-          default: Type of web server instances
-        InstanceCount:
-          default: Number of instances behind load balancer. Minimum 2 required for high availability
-        KeyName:
-          default: Name of an existing EC2 KeyPair to enable SSH access to the instances
-        AdminUser:
-          default: The solodev admin username
-        AdminPassword:
-          default: The solodev admin password
-        DatabaseName:
-          default: The database name
-        DatabasePassword:
-          default: The database root password
-        StorageEncrypted:
-          default: Enable encryption for both Database (RDS) and Filesystem (EFS)
-        FQDN:
-          default: Fully qualified domain name for the backend app
-        CertificateArn:
-          default: CertificateArn for SSL cert that matches the FQDN
-        RestoreBucketName:
-          default: Name of S3 bucket containing files for restore
-        DeletionPolicy:
-          default: Experimental Deletion Policy (Retain, Delete, Snapshot)
-        QSS3BucketName:
-          default: AWS Quick Start S3 bucket name
-        QSS3KeyPrefix:
-          default: AWS Quick Start S3 key prefix
+    - 
+      Label: 
+        default: "Network Setup"
+      Parameters: 
+        - ResourceName 
+        - AvailabilityZone
+        - InstanceType
+        - InstanceCount
+        - KeyName
+    - 
+      Label: 
+        default: "CMS Settings"
+      Parameters: 
+          - AdminUser
+          - AdminPassword
+          - DatabaseName
+          - DatabasePassword
+          - StorageEncrypted
+    - 
+      Label: 
+        default: "Optional: SSL Configuration"
+      Parameters: 
+        - FQDN
+        - CertificateArn
+    - 
+      Label: 
+        default: "Optional: Advanced"
+      Parameters: 
+        - RestoreBucketName
+        - DeletionPolicy
+    - 
+      Label:
+        default: AWS Quick Start Configuration
+      Parameters:
+        - QSS3BucketName
+        - QSS3KeyPrefix
+    ParameterLabels:
+      ResourceName:
+        default: Resource name for the stack
+      AvailabilityZone:
+        default: Availability zone to deploy the stack
+      InstanceType:
+        default: Type of web server instances
+      InstanceCount:
+        default: Number of instances behind load balancer. Minimum 2 required for high availability
+      KeyName:
+        default: Name of an existing EC2 KeyPair to enable SSH access to the instances
+      AdminUser:
+        default: The solodev admin username
+      AdminPassword:
+        default: The solodev admin password
+      DatabaseName:
+        default: The database name
+      DatabasePassword:
+        default: The database root password
+      StorageEncrypted:
+        default: Enable encryption for both Database (RDS) and Filesystem (EFS)
+      FQDN:
+        default: Fully qualified domain name for the backend app
+      CertificateArn:
+        default: CertificateArn for SSL cert that matches the FQDN
+      RestoreBucketName:
+        default: Name of S3 bucket containing files for restore
+      DeletionPolicy:
+        default: Experimental Deletion Policy (Retain, Delete, Snapshot)
+      QSS3BucketName:
+        default: AWS Quick Start S3 bucket name
+      QSS3KeyPrefix:
+        default: AWS Quick Start S3 key prefix
 
 Mappings:
   ECS:
@@ -230,7 +230,8 @@ Resources:
                 ResourceName: !Ref ResourceName
                 VPCID: !GetAtt VPC.Outputs.VPCID
                 CertificateArn: !Ref CertificateArn
-                Subnets: !Join [ ",", [ !GetAtt VPC.Outputs.PublicSubnet1ID, !GetAtt VPC.Outputs.PublicSubnet2ID ] ]
+                PublicSubnets: !Join [ ",", [ !GetAtt VPC.Outputs.PublicSubnet1ID, !GetAtt VPC.Outputs.PublicSubnet2ID ] ]
+                PrivateSubnets: !Join [ ",", [ !GetAtt VPC.Outputs.PrivateSubnet1AID, !GetAtt VPC.Outputs.PrivateSubnet2AID ] ]
                 StorageEncrypted: !Ref StorageEncrypted
                 InstanceType: !Ref InstanceType
                 KeyName: !Ref KeyName

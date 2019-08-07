@@ -12,9 +12,13 @@
     "ParameterValue": "myvpc"
   }, 
   {
-    "ParameterKey": "Subnets",
-    "ParameterValue": "mysubnets"
+    "ParameterKey": "PublicSubnets",
+    "ParameterValue": "mypublicsubnets"
   }, 
+  {
+    "ParameterKey": "PrivateSubnets",
+    "ParameterValue": "myprivatesubnets"
+  },   
   {
     "ParameterKey": "InstanceCount",
     "ParameterValue": "1"
