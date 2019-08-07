@@ -177,7 +177,8 @@ Resources:
                 ResourceName: !Ref ResourceName
                 VPCID: !GetAtt VPC.Outputs.VPCID
                 CertificateArn: !Ref CertificateArn
-                Subnets: !Join [ ",", [ !GetAtt VPC.Outputs.PublicSubnet1ID, !GetAtt VPC.Outputs.PublicSubnet2ID ] ]
+                PublicSubnets: !Join [ ",", [ !GetAtt VPC.Outputs.PublicSubnet1ID, !GetAtt VPC.Outputs.PublicSubnet2ID ] ]
+                PrivateSubnets: !Join [ ",", [ !GetAtt VPC.Outputs.PrivateSubnet1AID, !GetAtt VPC.Outputs.PrivateSubnet2AID ] ]
                 StorageEncrypted: !Ref StorageEncrypted
                 InstanceType: !Ref InstanceType
                 KeyName: !Ref KeyName

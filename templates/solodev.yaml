@@ -83,8 +83,14 @@ Parameters:
         AllowedPattern: .+
         ConstraintDescription: Please choose VPC
 
-    Subnets:
+    PublicSubnets:
         Description: Choose at least two public subnets for this application
+        Type: List<AWS::EC2::Subnet::Id>
+        AllowedPattern: .+
+        ConstraintDescription: Please choose Subnets
+
+    PrivateSubnets:
+        Description: Choose at least two private subnets for this application
         Type: List<AWS::EC2::Subnet::Id>
         AllowedPattern: .+
         ConstraintDescription: Please choose Subnets
@@ -201,7 +207,7 @@ Resources:
                 EnvironmentName: !Ref ResourceName
                 VPC: !Ref VPCID
                 CertificateArn: !Ref CertificateArn
-                Subnets: !Join [",", [!Select [0, !Ref Subnets], !Select [1, !Ref Subnets]]]
+                Subnets: !Join [",", [!Select [0, !Ref PublicSubnets], !Select [1, !Ref PublicSubnets]]]
 
     EFS:
         Type: AWS::CloudFormation::Stack
@@ -212,7 +218,7 @@ Resources:
                 VPC: !Ref VPCID
                 LoadBalancerSecurityGroup: !GetAtt ALB.Outputs.LoadBalancerSecurityGroup
                 StorageEncrypted: !Ref StorageEncrypted
-                Subnets: !Join [",", [!Select [0, !Ref Subnets], !Select [1, !Ref Subnets]]]
+                Subnets: !Join [",", [!Select [0, !Ref PrivateSubnets], !Select [1, !Ref PrivateSubnets]]]
 
     ECS:
         Type: AWS::CloudFormation::Stack
@@ -226,7 +232,7 @@ Resources:
                 VPC: !Ref VPCID
                 EFS: !GetAtt EFS.Outputs.EFS
                 LoadBalancerSecurityGroup: !GetAtt ALB.Outputs.LoadBalancerSecurityGroup
-                Subnets: !Join [",", [!Select [0, !Ref Subnets], !Select [1, !Ref Subnets]]]
+                Subnets: !Join [",", [!Select [0, !Ref PrivateSubnets], !Select [1, !Ref PrivateSubnets]]]
                 KeyName: !Ref KeyName
 
     RDS:
@@ -238,7 +244,7 @@ Resources:
                 DatabaseName: !Ref DatabaseName
                 VPC: !Ref VPCID
                 LoadBalancerSecurityGroup: !GetAtt ECS.Outputs.ECSHostSecurityGroup
-                Subnets: !Join [",", [!Select [0, !Ref Subnets], !Select [1, !Ref Subnets]]]
+                Subnets: !Join [",", [!Select [0, !Ref PrivateSubnets], !Select [1, !Ref PrivateSubnets]]]
                 DatabasePassword: !Ref DatabasePassword
                 DeletionPolicy: !Ref DeletionPolicy
                 StorageEncrypted: !Ref StorageEncrypted
@@ -256,7 +262,7 @@ Resources:
                 ClusterArn: !GetAtt ECS.Outputs.ClusterArn
                 LoadBalancer: !GetAtt ALB.Outputs.LoadBalancer
                 LoadBalancerSecurityGroup: !GetAtt ALB.Outputs.LoadBalancerSecurityGroup
-                Subnets: !Join [",", [!Select [0, !Ref Subnets], !Select [1, !Ref Subnets]]]
+                Subnets: !Join [",", [!Select [0, !Ref PrivateSubnets], !Select [1, !Ref PrivateSubnets]]]
                 AdminUsername: !Ref AdminUser
                 AdminPassword: !Ref AdminPassword
                 DatabaseHost: !GetAtt RDS.Outputs.DatabaseHost
