@@ -8,103 +8,67 @@ Description: >
 Metadata: 
   AWS::CloudFormation::Interface: 
     ParameterGroups: 
-    - 
-      Label: 
-        default: "Network Setup"
-      Parameters:
-        - ResourceName 
-        - VPCID
-        - PublicSubnets
-        - PrivateSubnets
-        - InstanceType
-        - InstanceCount
-        - KeyName
-    - 
-      Label: 
-        default: "CMS Settings"
-      Parameters: 
-          - AdminUser
-          - AdminPassword
-          - DatabaseName
-          - DatabasePassword
-          - StorageEncrypted
-    - 
-      Label: 
-        default: "Optional: SSL Configuration"
-      Parameters: 
-        - FQDN
-        - CertificateArn
-    - 
-      Label: 
-        default: "Optional: Advanced"
-      Parameters: 
-        - RestoreBucketName
-        - DeletionPolicy
-    - 
-      Label:
-        default: AWS Quick Start Configuration
-      Parameters:
-        - QSS3BucketName
-        - QSS3KeyPrefix
-    ParameterLabels:
-      ResourceName:
-        default: Resource name for the stack
-      VPCID:
-        default: Choose which VPC the Application should be deployed to
-      PublicSubnets:
-        default: Choose at least two public subnets for this application
-      PrivateSubnets:
-        default: Choose at least two private subnets for this application
-      InstanceType:
-        default: Type of web server instances
-      InstanceCount:
-        default: Number of instances behind load balancer. Minimum 2 required for high availability
-      KeyName:
-        default: Name of an existing EC2 KeyPair to enable SSH access to the instances
-      AdminUser:
-        default: The solodev admin username
-      AdminPassword:
-        default: The solodev admin password
-      DatabaseName:
-        default: The database name
-      DatabasePassword:
-        default: The database root password
-      StorageEncrypted:
-        default: Enable encryption for both Database (RDS) and Filesystem (EFS)
-      FQDN:
-        default: Fully qualified domain name for the backend app
-      CertificateArn:
-        default: CertificateArn for SSL cert that matches the FQDN
-      RestoreBucketName:
-        default: Name of S3 bucket containing files for restore
-      DeletionPolicy:
-        default: Experimental Deletion Policy (Retain, Delete, Snapshot)
-      QSS3BucketName:
-        default: AWS Quick Start S3 bucket name
-      QSS3KeyPrefix:
-        default: AWS Quick Start S3 key prefix
+      - 
+        Label: 
+          default: "Network Configuration"
+        Parameters:
+          - ResourceName 
+          - VPCID
+          - Subnets
+          - InstanceType
+          - InstanceCount
+          - KeyName
+      - 
+        Label: 
+          default: "CMS Configuration"
+        Parameters: 
+            - AdminUser
+            - AdminPassword
+            - DatabaseName
+            - DatabasePassword
+            - StorageEncrypted
+      - 
+        Label: 
+          default: "Optional: SSL Configuration"
+        Parameters: 
+          - FQDN
+          - CertificateArn
+      - 
+        Label: 
+          default: "Optional: Advance Configuration"
+        Parameters: 
+          - RestoreBucketName
+          - DeletionPolicy
+      - 
+        Label:
+          default: AWS Quick Start Configuration
+        Parameters:
+          - QSS3BucketName
+          - QSS3KeyPrefix
 
 
 Mappings:
   ECS:
+    AMI:
+      AMZNECS: amzn-ami-2018.03.i-amazon-ecs-optimized
     us-east-1:
-      AMI: "ami-045f1b3f87ed83659"
+      AMZNECS: "ami-045f1b3f87ed83659"
     us-east-2:
-      AMI: "ami-0307f7ccf6ea35750"
+      AMZNECS: "ami-0307f7ccf6ea35750"
     us-west-1:
-      AMI: "ami-0285183bbef6224bd"
+      AMZNECS: "ami-0285183bbef6224bd"
     us-west-2:
-      AMI: "ami-01b70aea4161476b7"
+      AMZNECS: "ami-01b70aea4161476b7"
     eu-west-1:
-      AMI: "ami-0627e141ce928067c"
+      AMZNECS: "ami-0627e141ce928067c"
     sa-east-1:
-      AMI: "ami-084b1eee100c102ee"
+      AMZNECS: "ami-084b1eee100c102ee"
     ap-southeast-1:
-      AMI: "ami-050865a806e0dae53"
+      AMZNECS: "ami-050865a806e0dae53"
     ap-southeast-2:
-      AMI: "ami-02c73ee1100ce3e7a"
+      AMZNECS: "ami-02c73ee1100ce3e7a"
     ap-northeast-1:
-      AMI: "ami-05b296a384694dfa4"
+      AMZNECS: "ami-05b296a384694dfa4"
 
 Parameters:
 
@@ -263,7 +227,7 @@ Resources:
             Parameters:
                 EnvironmentName: !Ref ResourceName
                 InstanceType: !Ref InstanceType
-                AMI: !FindInMap ["ECS", !Ref "AWS::Region", AMI]
+                AMI: !FindInMap ["ECS", !Ref "AWS::Region", AMZNECS]
                 ClusterSize: !Ref InstanceCount
                 VPC: !Ref VPCID
                 EFS: !GetAtt EFS.Outputs.EFS
