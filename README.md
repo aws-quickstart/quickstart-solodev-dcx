@@ -11,7 +11,7 @@ The Quick Start offers one deployment options:
 
 - Delpoy Solodev DCX Enterprise Edition for Docker into an existing VPC on AWS
 
-![Delpoy Solodev DCX Enterprise Edition for Docker on AWS](https://raw.githubusercontent.com/solodev/aws/master/pages/images/Solodev_Docker_Architecture.jpg)
+![Delpoy Solodev DCX Enterprise Edition for Docker on AWS](https://raw.githubusercontent.com/solodev/aws/master/pages/images/solodev-dcx-architecture-for-aws.jpg)
 
 For architectural details, best practices, step-by-step instructions, and customization options, see the 
 [deployment guide](https://github.com/aws-quickstart/quickstart-solodev-cms#tbd).
