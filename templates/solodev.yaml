@@ -3,7 +3,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 
 Description: >
 
-    This template deploys Solodev Enterprise for Docker into an existing VPC
+    This template deploys Solodev Enterprise for Docker into an existing VPC (qp-1pdp5tpdi)
 
 Metadata: 
   AWS::CloudFormation::Interface: 
