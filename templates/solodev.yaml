@@ -26,6 +26,7 @@ Metadata:
           - DatabaseName
           - DatabasePassword
           - StorageEncrypted
+          - GPGPW
     - Label: 
         default: "Optional: SSL Configuration"
       Parameters: 
@@ -56,6 +57,8 @@ Metadata:
         default: Number of instances behind load balancer. Minimum 2 required for high availability
       KeyName:
         default: Name of an existing EC2 KeyPair to enable SSH access to the instances
+      GPGPW:
+        default: Encryption key for backups
       AdminUser:
         default: The solodev admin username
       AdminPassword:
