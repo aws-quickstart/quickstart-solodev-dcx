@@ -9,7 +9,7 @@ Metadata:
   AWS::CloudFormation::Interface: 
     ParameterGroups: 
     - Label: 
-        default: "Network Configuration"
+        default: "Network configuration"
       Parameters:
         - ResourceName 
         - VPCID
@@ -19,7 +19,7 @@ Metadata:
         - InstanceCount
         - KeyName
     - Label: 
-        default: "CMS Configuration"
+        default: "CMS configuration"
       Parameters: 
           - AdminUser
           - AdminPassword
@@ -28,17 +28,17 @@ Metadata:
           - StorageEncrypted
           - GPGPW
     - Label: 
-        default: "Optional: SSL Configuration"
+        default: "SSL configuration (optional)"
       Parameters: 
         - FQDN
         - CertificateArn
     - Label: 
-        default: "Optional: Advance Configuration"
+        default: "Advanced configuration (optional)"
       Parameters: 
         - RestoreBucketName
         - DeletionPolicy
     - Label:
-        default: AWS Quick Start Configuration
+        default: AWS Quick Start configuration
       Parameters:
         - QSS3BucketName
         - QSS3KeyPrefix
@@ -46,37 +46,37 @@ Metadata:
       ResourceName:
         default: Resource name for the stack
       VPCID:
-        default: Choose which VPC the Application should be deployed to
+        default: VPC ID
       PublicSubnets:
-        default: Choose at least two public subnets for this application
+        default: Public subnets
       PrivateSubnets:
-        default: Choose at least two private subnets for this application
+        default: Private subnets
       InstanceType:
-        default: Type of web server instances
+        default: Web server instance type
       InstanceCount:
-        default: Number of instances behind load balancer. Minimum 2 required for high availability
+        default: Number of instances
       KeyName:
-        default: Name of an existing EC2 KeyPair to enable SSH access to the instances
+        default: EC2 key pair name
       GPGPW:
-        default: Encryption key for backups
+        default: Encryption key
       AdminUser:
-        default: The solodev admin username
+        default: Admin user name
       AdminPassword:
-        default: The solodev admin password
+        default: Admin password
       DatabaseName:
-        default: The database name
+        default: Database name
       DatabasePassword:
-        default: The database root password
+        default: Database root password
       StorageEncrypted:
-        default: Enable encryption for both Database (RDS) and Filesystem (EFS)
+        default: Encryption enabled
       FQDN:
-        default: Fully qualified domain name for the backend app
+        default: Fully qualified domain name
       CertificateArn:
-        default: CertificateArn for SSL cert that matches the FQDN
+        default: CertificateArn
       RestoreBucketName:
-        default: Name of S3 bucket containing files for restore
+        default: S3 bucket name for restore
       DeletionPolicy:
-        default: Experimental Deletion Policy (Retain, Delete, Snapshot)
+        default: Experimental deletion policy
       QSS3BucketName:
         default: AWS Quick Start S3 bucket name
       QSS3KeyPrefix:
@@ -110,34 +110,35 @@ Parameters:
 
     ResourceName:
         Type: String
-        Description: 'The name used to title the nested stacks'
+        Description: 'The name used to title the nested stacks.'
         Default: "solodev-quickstart"
 
     VPCID: 
         Type: AWS::EC2::VPC::Id
-        Description: Choose which VPC the Application should be deployed to
+        Description: The ID of the existing VPC for the deployment.
         AllowedPattern: .+
         ConstraintDescription: Please choose VPC
 
     PublicSubnets:
-        Description: Choose at least two public subnets for this application
+        Description: Choose at least two public subnets in your existing VPC.
         Type: List<AWS::EC2::Subnet::Id>
         AllowedPattern: .+
         ConstraintDescription: Please choose Subnets
 
     PrivateSubnets:
-        Description: Choose at least two private subnets for this application
+        Description: Choose at least two private subnets in your existing VPC.
         Type: List<AWS::EC2::Subnet::Id>
         AllowedPattern: .+
         ConstraintDescription: Please choose Subnets
 
     KeyName:
-        Description: Name of an existing EC2 KeyPair to enable SSH access to the instances
+        Description: Name of an existing EC2 key pair to enable SSH access to the instances.
         Type: 'AWS::EC2::KeyPair::KeyName'
         AllowedPattern: .+
         ConstraintDescription: Please choose EC2 KeyPair
 
     InstanceType:
+        Description: The size of the EC2 instance you want to deploy.
         Type: String
         Default: m3.medium
         AllowedValues: [t2.micro, t2.small, t2.medium, t2.large, m3.medium, m3.large,
@@ -148,7 +149,7 @@ Parameters:
         ConstraintDescription: Please choose a valid instance type.
 
     InstanceCount:
-        Description: 'Number of instances behind load balancer.  Minimum 2 required for high availability.'
+        Description: 'Number of instances behind load balancer. Minimum of 2 required for high availability.'
         Default: 2
         AllowedValues: [1, 2, 3, 4, 5]
         Type: Number
@@ -156,18 +157,18 @@ Parameters:
     DeletionPolicy:
         Default: 'Delete'
         Type: String
-        Description: 'Experimental: Deletion Policy (Retain, Delete, Snapshot)'
+        Description: 'Experimental field specifying the deletion policy (Retain, Delete, Snapshot).'
 
     FQDN:
         Type: String
-        Description: (Optional) URL for app. FQDN must be pointed to CNAME of ALB.
+        Description: (Optional) Fully qualified domain name for the backend application. After deployment, the FQDN must be pointed to the CNAME of the ALB.
 
     CertificateArn:
         Type: String
-        Description: (Optional) CertificateArn for SSL cert that matches the FQDN above. Please visit the AWS Certificate Manager.
+        Description: (Optional) SSL Certificate ARN that matches the FQDN above. Certificates and Certificate ARN can be acquired via AWS Certificate Manager.
 
     AdminUser:
-        Description: The solodev admin username
+        Description: The Solodev administrator user name used to log in to the application.
         Type: String
         Default: 'solodev'
         AllowedPattern: .+
@@ -175,7 +176,7 @@ Parameters:
 
     AdminPassword:
         NoEcho: true
-        Description: The solodev admin password
+        Description: The Solodev administrator password used to log in to the application.
         Type: String
         MinLength: 1
         MaxLength: 41
@@ -183,7 +184,7 @@ Parameters:
         ConstraintDescription: Please set admin password
 
     DatabaseName:
-        Description: The solodev database name
+        Description: Database name used during deployment when setting up the Amazon RDS MySQL database.
         Type: String
         MinLength: '1'
         MaxLength: '64'
@@ -193,7 +194,7 @@ Parameters:
 
     DatabasePassword:
         NoEcho: true
-        Description: The database root password
+        Description: Database root password used when setting up and connecting directly to the Amazon RDS MySQL database.
         Type: String
         MinLength: 1
         MaxLength: 41
@@ -201,13 +202,13 @@ Parameters:
         ConstraintDescription: Please set database root password
 
     RestoreBucketName:
-        Description: (Optional) Name of S3 bucket containing files for restore
+        Description: (Optional) Name of S3 bucket containing files for restore, if restoring a previous instance's backup files.
         Type: String
         Default: ""
 
     StorageEncrypted:
         Default: 'true'
-        Description: Enable encryption for both Database (RDS) and Filesystem (EFS)
+        Description: Enable encryption for both the database (RDS) and the file system (EFS).
         Type: String
         AllowedValues:
         - 'true'
@@ -215,7 +216,7 @@ Parameters:
         ConstraintDescription: must be either true or false.
 
     GPGPW:
-        Description: Encryption key for backups
+        Description: Encryption key for backups.
         Type: String
         Default: "KbM7c1NVNZaN"
 
