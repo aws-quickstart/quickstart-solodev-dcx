@@ -29,7 +29,7 @@ Metadata:
         - GPGPW
     - 
       Label: 
-        default: "SSL Configuration (optional)"
+        default: "SSL configuration (optional)"
       Parameters: 
         - FQDN
         - CertificateArn
@@ -57,7 +57,7 @@ Metadata:
       KeyName:
         default: EC2 key pair name
       GPGPW:
-        default: Encryption key for backups
+        default: Encryption key
       AdminUser:
         default: Admin user name
       AdminPassword:
@@ -73,7 +73,7 @@ Metadata:
       CertificateArn:
         default: CertificateArn
       RestoreBucketName:
-        default: Bucket name for restore
+        default: S3 bucket name for restore
       DeletionPolicy:
         default: Experimental deletion policy
       QSS3BucketName:
@@ -100,7 +100,7 @@ Parameters:
         ConstraintDescription: Please choose EC2 KeyPair
 
     InstanceType:
-        Description: Instance type to use for the web server instances.
+        Description: The size of the EC2 instance you want to deploy.
         Type: String
         Default: m3.medium
         AllowedValues: [t2.micro, t2.small, t2.medium, t2.large, m3.medium, m3.large,
@@ -111,7 +111,7 @@ Parameters:
         ConstraintDescription: Please choose a valid instance type.
 
     InstanceCount:
-        Description: 'Number of instances behind the load balancer.  Minimum of 2 required for high availability.'
+        Description: 'Number of instances behind the load balancer. Minimum of 2 required for high availability.'
         Default: 2
         AllowedValues: [1, 2, 3, 4, 5]
         Type: Number
@@ -164,7 +164,7 @@ Parameters:
         ConstraintDescription: Please set database root password
 
     RestoreBucketName:
-        Description: (Optional) Name of S3 bucket containing files for restore, if restoring a previous instance's backup files
+        Description: (Optional) Name of S3 bucket containing files for restore, if restoring a previous instance's backup files.
         Type: String
         Default: ""
 
@@ -178,7 +178,7 @@ Parameters:
         ConstraintDescription: must be either true or false.
 
     GPGPW:
-        Description: Encryption key for backups
+        Description: Encryption key for backups.
         Type: String
         Default: "KbM7c1NVNZaN"
 
