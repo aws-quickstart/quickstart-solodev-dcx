@@ -1,4 +1,4 @@
-# quickstart-solodev-cms
+# quickstart-solodev-dcx
 ## Solodev DCX Enterprise Edition for Docker
 
 This quick start deploys Solodev DCX Enterprise Edition for Docker on AWS in roughly 25 minutes.
