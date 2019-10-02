@@ -1,7 +1,7 @@
 global:
   marketplace-ami: true
   owner: scott@solodev.com
-  qsname: quickstart-solodev-cms
+  qsname: quickstart-solodev-dcx
   regions:
     - us-east-1  
     - us-east-2
