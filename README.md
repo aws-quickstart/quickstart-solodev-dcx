@@ -9,7 +9,7 @@ You can use the AWS CloudFormation templates included with the Quick Start to de
 
 - Deploying Solodev DCX Enterprise Edition for Docker into a new VPC
 - Deploying Solodev DCX Enterprise Edition for Docker into an existing VPC
-- 
+
 ![Quick Start architecture for Solodev DCX Enterprise Edition for Docker on the AWS Cloud](https://d0.awsstatic.com/partner-network/QuickStart/datasheets/solodev-dcx-on-aws-architecture-diagram.png)
 
 For architectural details, best practices, and step-by-step instructions, see the deployment guide for [Solodev DCX Enterprise Edition for Docker](https://fwd.aws/VQkDG).
