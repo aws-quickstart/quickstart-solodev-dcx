@@ -4,8 +4,12 @@
     "ParameterValue":"$[taskcat_autobucket]"
   },
   {
+    "ParameterKey":"QSS3BucketRegion",
+    "ParameterValue": "$[taskcat_current_region]"
+  },
+  {
     "ParameterKey": "KeyName",
-    "ParameterValue": "cikey"
+    "ParameterValue": "davmayd"
   }, 
   {
     "ParameterKey": "AvailabilityZone",

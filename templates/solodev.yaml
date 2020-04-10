@@ -41,6 +41,7 @@ Metadata:
         default: AWS Quick Start configuration
       Parameters:
         - QSS3BucketName
+        - QSS3BucketRegion
         - QSS3KeyPrefix
     ParameterLabels:
       ResourceName:
@@ -79,6 +80,8 @@ Metadata:
         default: Experimental deletion policy
       QSS3BucketName:
         default: AWS Quick Start S3 bucket name
+      QSS3BucketRegion:
+        default: Quick Start S3 bucket region
       QSS3KeyPrefix:
         default: AWS Quick Start S3 key prefix          
 
@@ -227,6 +230,11 @@ Parameters:
         Default: "aws-quickstart"
         ConstraintDescription: Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).
 
+    QSS3BucketRegion:
+        Default: 'us-east-1'
+        Description: 'The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.'
+        Type: String
+
     QSS3KeyPrefix:
         AllowedPattern: "^[0-9a-zA-Z-/]*$"
         Description:  Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).
@@ -234,12 +242,19 @@ Parameters:
         Default: "quickstart-solodev-dcx/"
         ConstraintDescription: S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).
 
+Conditions:
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
+
 Resources:     
 
     ALB:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/alb.yaml
+            TemplateURL:
+              !Sub
+                - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/alb.yaml'
+                - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+                  S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
             Parameters:
                 EnvironmentName: !Ref ResourceName
                 VPC: !Ref VPCID
@@ -249,7 +264,11 @@ Resources:
     EFS:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/efs.yaml             
+            TemplateURL:
+              !Sub
+                - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/efs.yaml'
+                - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+                  S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]           
             Parameters:
                 EnvironmentName: !Ref ResourceName
                 VPC: !Ref VPCID
@@ -260,7 +279,11 @@ Resources:
     ECS:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/ecs.yaml          
+            TemplateURL:
+              !Sub
+                - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ecs.yaml'
+                - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+                  S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]        
             Parameters:
                 EnvironmentName: !Ref ResourceName
                 InstanceType: !Ref InstanceType
@@ -275,7 +298,11 @@ Resources:
     RDS:
         Type: AWS::CloudFormation::Stack
         Properties:
-            TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/rds.yaml
+            TemplateURL:
+              !Sub
+                - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/rds.yaml'
+                - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+                  S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
             Parameters:
                 EnvironmentName: !Ref ResourceName
                 DatabaseName: !Ref DatabaseName
@@ -291,7 +318,11 @@ Resources:
         Type: AWS::CloudFormation::Stack
         DependsOn: RDS
         Properties:
-            TemplateURL: !Sub https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/ecs-solodev.yaml
+            TemplateURL:
+              !Sub
+                - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ecs-solodev.yaml'
+                - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+                  S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
             Parameters:
                 EnvironmentName: !Ref ResourceName
                 VPC: !Ref VPCID
